@@ -41,9 +41,24 @@ app.post('/dados-sensores', (req, res) => {
            });
 });
 
+// No backend (server.js)
+app.post('/inserir-dados-sensor', (req, res) => {
+    const { sensor_id, temperatura, umidade } = req.body;
+    console.log('Dados do sensor recebidos:', { sensor_id, temperatura, umidade });
 
-
-
+    // Lógica para atualizar os dados no banco de dados
+    db.run(`INSERT INTO dados_sensores (sensor_id, temperatura, umidade) VALUES (?, ?, ?)`, 
+           [sensor_id, temperatura, umidade], 
+           (err) => {
+               if (err) {
+                   console.error('Erro ao inserir dados no banco de dados:', err.message);
+                   res.status(500).send('Erro ao processar os dados.');
+               } else {
+                   console.log('Dados inseridos no banco de dados com sucesso.');
+                   res.send('Dados recebidos e armazenados com sucesso.');
+               }
+           });
+});
 
 app.get('/dados-sensores', (req, res) => {
    // Query para buscar todos os dados cadastrados na tabela
@@ -61,7 +76,6 @@ app.get('/dados-sensores', (req, res) => {
    });
 });
 
-
 // Endpoint para limpar todos os dados da tabela
 app.delete('/limpar-dados', (req, res) => {
     // Query para deletar todos os dados da tabela
@@ -78,7 +92,6 @@ app.delete('/limpar-dados', (req, res) => {
         }
     });
 });
-
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
